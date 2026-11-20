@@ -385,7 +385,7 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
 
         VideoPlayerAdapter playerAdapter = getPlayerAdapter();
 
-        if (playerAdapter.hasSubs() && keyCode == KeyEvent.KEYCODE_CAPTIONS) {
+        if (playerAdapter.hasSubs() && (keyCode == KeyEvent.KEYCODE_CAPTIONS || keyCode == KeyEvent.KEYCODE_F1)) {
             closedCaptionsAction.handleClickAction(playbackController, getPlayerAdapter(), getContext(), v);
         }
         if (playerAdapter.hasMultiAudio() && keyCode == KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK) {
