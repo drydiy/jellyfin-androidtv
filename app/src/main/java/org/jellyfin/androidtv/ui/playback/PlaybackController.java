@@ -182,6 +182,7 @@ public class PlaybackController implements PlaybackControllerNotifiable {
         if (hasInitializedVideoManager()) {
             mVideoManager.setPlaybackSpeed(speed);
         }
+        if (mFragment != null) mFragment.refreshSpeedIndicator();
     }
 
     public BaseItemDto getCurrentlyPlayingItem() {

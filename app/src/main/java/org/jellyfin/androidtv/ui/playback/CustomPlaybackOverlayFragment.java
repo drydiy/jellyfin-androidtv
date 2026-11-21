@@ -1279,6 +1279,11 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
         leanbackOverlayFragment.updatePlayState();
     }
 
+    public void refreshSpeedIndicator() {
+        PlaybackController pc = playbackControllerContainer.getValue().getPlaybackController();
+        if (pc != null) updateSpeedIndicator(pc.getPlaybackSpeed());
+    }
+
     private void updateSpeedIndicator(float speed) {
         if (binding == null) return;
         if (speed == 1.0f) {
