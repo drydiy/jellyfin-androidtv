@@ -222,6 +222,7 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
 
         if (playbackController != null) {
             playbackController.init(new VideoManager(requireActivity(), view, helper), this);
+            MediaKeyAccessibilityService.setActiveFragment(this);
         }
     }
 
@@ -229,6 +230,7 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
     public void onDestroyView() {
         super.onDestroyView();
 
+        MediaKeyAccessibilityService.setActiveFragment(null);
         binding = null;
         // To fix race condition in hide timer
         mIsVisible = false;
@@ -1277,6 +1279,37 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
 
     public void setPlayPauseActionState(final int state) {
         leanbackOverlayFragment.updatePlayState();
+    }
+
+    public boolean handleInterceptedMediaKey(int keyCode) {
+        if (mGuideVisible || mPopupPanelVisible) return false;
+
+        PlaybackController pc = playbackControllerContainer.getValue().getPlaybackController();
+        if (pc == null) return false;
+
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+            pc.playPause();
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
+            pc.play(0);
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
+            pc.pause();
+            return true;
+        }
+        if (!pc.isLiveTv()) {
+            if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+                leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedUp();
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_MEDIA_REWIND) {
+                leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedDown();
+                return true;
+            }
+        }
+        return false;
     }
 
     public void refreshSpeedIndicator() {
