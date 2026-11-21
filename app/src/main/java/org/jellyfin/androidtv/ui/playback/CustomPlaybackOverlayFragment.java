@@ -474,6 +474,7 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
     private View.OnKeyListener keyListener = new View.OnKeyListener() {
         @Override
         public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) Utils.showToast(requireContext(), KeyEvent.keyCodeToString(keyCode) + " (" + keyCode + ")");
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 if (!mGuideVisible)
                     leanbackOverlayFragment.setShouldShowOverlay(true);
