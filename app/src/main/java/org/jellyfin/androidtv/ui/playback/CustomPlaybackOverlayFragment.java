@@ -474,7 +474,6 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
     private View.OnKeyListener keyListener = new View.OnKeyListener() {
         @Override
         public boolean onKey(View v, int keyCode, KeyEvent event) {
-            if (event.getAction() == KeyEvent.ACTION_DOWN) Utils.showToast(requireContext(), KeyEvent.keyCodeToString(keyCode) + " (" + keyCode + ")");
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 if (!mGuideVisible)
                     leanbackOverlayFragment.setShouldShowOverlay(true);
@@ -589,6 +588,20 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
 
                     // Control fast forward and rewind if overlay hidden and not showing live TV
                     if (!playbackControllerContainer.getValue().getPlaybackController().isLiveTv()) {
+                        if (keyCode == KeyEvent.KEYCODE_PAGE_UP) {
+                            float newSpeed = leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedUp();
+                            updateSpeedIndicator(newSpeed);
+                            setFadingEnabled(true);
+                            return true;
+                        }
+
+                        if (keyCode == KeyEvent.KEYCODE_PAGE_DOWN) {
+                            float newSpeed = leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedDown();
+                            updateSpeedIndicator(newSpeed);
+                            setFadingEnabled(true);
+                            return true;
+                        }
+
                         if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
                             float newSpeed = leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedUp();
                             updateSpeedIndicator(newSpeed);
