@@ -61,9 +61,15 @@ class PlaybackSpeedAction(
 		menu.getItem(speeds.indexOf(speedController.currentSpeed)).isChecked = true
 	}
 
-	fun cycleSpeed(): Float {
-		val nextIndex = (speeds.indexOf(speedController.currentSpeed) + 1) % speeds.size
-		speedController.currentSpeed = speeds[nextIndex]
+	fun stepSpeedUp(): Float {
+		val idx = speeds.indexOf(speedController.currentSpeed)
+		if (idx < speeds.size - 1) speedController.currentSpeed = speeds[idx + 1]
+		return speedController.currentSpeed.speed
+	}
+
+	fun stepSpeedDown(): Float {
+		val idx = speeds.indexOf(speedController.currentSpeed)
+		if (idx > 0) speedController.currentSpeed = speeds[idx - 1]
 		return speedController.currentSpeed.speed
 	}
 

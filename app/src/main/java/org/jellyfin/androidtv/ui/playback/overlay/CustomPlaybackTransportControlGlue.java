@@ -394,8 +394,12 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
         return super.onKey(v, keyCode, event);
     }
 
-    public float cyclePlaybackSpeed() {
-        return playbackSpeedAction.cycleSpeed();
+    public float stepPlaybackSpeedUp() {
+        return playbackSpeedAction.stepSpeedUp();
+    }
+
+    public float stepPlaybackSpeedDown() {
+        return playbackSpeedAction.stepSpeedDown();
     }
 
     private boolean moveFocus(View root, int keyCode) {
