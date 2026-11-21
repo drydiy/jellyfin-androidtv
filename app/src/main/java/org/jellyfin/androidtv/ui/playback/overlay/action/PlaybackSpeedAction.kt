@@ -61,6 +61,12 @@ class PlaybackSpeedAction(
 		menu.getItem(speeds.indexOf(speedController.currentSpeed)).isChecked = true
 	}
 
+	fun cycleSpeed(): Float {
+		val nextIndex = (speeds.indexOf(speedController.currentSpeed) + 1) % speeds.size
+		speedController.currentSpeed = speeds[nextIndex]
+		return speedController.currentSpeed.speed
+	}
+
 	fun dismissPopup() {
 		popup?.dismiss()
 	}
