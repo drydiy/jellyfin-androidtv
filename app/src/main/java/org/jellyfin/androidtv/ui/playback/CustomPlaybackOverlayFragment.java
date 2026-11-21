@@ -571,9 +571,31 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
                         }
                     }
 
+                    if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+                        playbackControllerContainer.getValue().getPlaybackController().playPause();
+                        return true;
+                    }
+
+                    if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
+                        playbackControllerContainer.getValue().getPlaybackController().play(0);
+                        return true;
+                    }
+
+                    if (keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
+                        playbackControllerContainer.getValue().getPlaybackController().pause();
+                        return true;
+                    }
+
                     // Control fast forward and rewind if overlay hidden and not showing live TV
                     if (!playbackControllerContainer.getValue().getPlaybackController().isLiveTv()) {
-                        if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD || keyCode == KeyEvent.KEYCODE_BUTTON_R1 || keyCode == KeyEvent.KEYCODE_BUTTON_R2) {
+                        if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+                            float newSpeed = leanbackOverlayFragment.getPlayerGlue().cyclePlaybackSpeed();
+                            Utils.showToast(requireContext(), String.format(java.util.Locale.US, "%.2fx", newSpeed));
+                            setFadingEnabled(true);
+                            return true;
+                        }
+
+                        if (keyCode == KeyEvent.KEYCODE_BUTTON_R1 || keyCode == KeyEvent.KEYCODE_BUTTON_R2) {
                             playbackControllerContainer.getValue().getPlaybackController().fastForward();
                             setFadingEnabled(true);
                             return true;

@@ -391,20 +391,11 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
         if (playerAdapter.hasMultiAudio() && keyCode == KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK) {
             selectAudioAction.handleClickAction(playbackController, getPlayerAdapter(), getContext(), v);
         }
-        if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
-            playbackController.playPause();
-        }
-        if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
-            playbackController.play(0);
-        }
-        if (keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
-            playbackController.pause();
-        }
-        if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD && !playerAdapter.isLiveTv()) {
-            float newSpeed = playbackSpeedAction.cycleSpeed();
-            android.widget.Toast.makeText(getContext(), String.format(java.util.Locale.US, "%.2fx", newSpeed), android.widget.Toast.LENGTH_SHORT).show();
-        }
         return super.onKey(v, keyCode, event);
+    }
+
+    public float cyclePlaybackSpeed() {
+        return playbackSpeedAction.cycleSpeed();
     }
 
     private boolean moveFocus(View root, int keyCode) {
