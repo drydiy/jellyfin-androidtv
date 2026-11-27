@@ -385,13 +385,21 @@ public class CustomPlaybackTransportControlGlue extends PlaybackTransportControl
 
         VideoPlayerAdapter playerAdapter = getPlayerAdapter();
 
-        if (playerAdapter.hasSubs() && keyCode == KeyEvent.KEYCODE_CAPTIONS) {
+        if (playerAdapter.hasSubs() && (keyCode == KeyEvent.KEYCODE_CAPTIONS || keyCode == KeyEvent.KEYCODE_F1)) {
             closedCaptionsAction.handleClickAction(playbackController, getPlayerAdapter(), getContext(), v);
         }
         if (playerAdapter.hasMultiAudio() && keyCode == KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK) {
             selectAudioAction.handleClickAction(playbackController, getPlayerAdapter(), getContext(), v);
         }
         return super.onKey(v, keyCode, event);
+    }
+
+    public float stepPlaybackSpeedUp() {
+        return playbackSpeedAction.stepSpeedUp();
+    }
+
+    public float stepPlaybackSpeedDown() {
+        return playbackSpeedAction.stepSpeedDown();
     }
 
     private boolean moveFocus(View root, int keyCode) {

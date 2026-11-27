@@ -222,6 +222,7 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
 
         if (playbackController != null) {
             playbackController.init(new VideoManager(requireActivity(), view, helper), this);
+            MediaKeyAccessibilityService.setActiveFragment(this);
         }
     }
 
@@ -229,6 +230,7 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
     public void onDestroyView() {
         super.onDestroyView();
 
+        MediaKeyAccessibilityService.setActiveFragment(null);
         binding = null;
         // To fix race condition in hide timer
         mIsVisible = false;
@@ -571,15 +573,58 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
                         }
                     }
 
+                    if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+                        playbackControllerContainer.getValue().getPlaybackController().playPause();
+                        return true;
+                    }
+
+                    if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
+                        playbackControllerContainer.getValue().getPlaybackController().play(0);
+                        return true;
+                    }
+
+                    if (keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
+                        playbackControllerContainer.getValue().getPlaybackController().pause();
+                        return true;
+                    }
+
                     // Control fast forward and rewind if overlay hidden and not showing live TV
                     if (!playbackControllerContainer.getValue().getPlaybackController().isLiveTv()) {
-                        if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD || keyCode == KeyEvent.KEYCODE_BUTTON_R1 || keyCode == KeyEvent.KEYCODE_BUTTON_R2) {
+                        if (keyCode == KeyEvent.KEYCODE_PAGE_UP) {
+                            float newSpeed = leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedUp();
+                            updateSpeedIndicator(newSpeed);
+                            setFadingEnabled(true);
+                            return true;
+                        }
+
+                        if (keyCode == KeyEvent.KEYCODE_PAGE_DOWN) {
+                            float newSpeed = leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedDown();
+                            updateSpeedIndicator(newSpeed);
+                            setFadingEnabled(true);
+                            return true;
+                        }
+
+                        if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+                            float newSpeed = leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedUp();
+                            updateSpeedIndicator(newSpeed);
+                            setFadingEnabled(true);
+                            return true;
+                        }
+
+                        if (keyCode == KeyEvent.KEYCODE_BUTTON_R1 || keyCode == KeyEvent.KEYCODE_BUTTON_R2) {
                             playbackControllerContainer.getValue().getPlaybackController().fastForward();
                             setFadingEnabled(true);
                             return true;
                         }
 
-                        if (keyCode == KeyEvent.KEYCODE_MEDIA_REWIND || keyCode == KeyEvent.KEYCODE_BUTTON_L1 || keyCode == KeyEvent.KEYCODE_BUTTON_L2) {
+                        if (keyCode == KeyEvent.KEYCODE_MEDIA_REWIND) {
+                            float newSpeed = leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedDown();
+                            updateSpeedIndicator(newSpeed);
+                            setFadingEnabled(true);
+                            return true;
+                        }
+
+                        if (keyCode == KeyEvent.KEYCODE_BUTTON_L1 || keyCode == KeyEvent.KEYCODE_BUTTON_L2) {
                             playbackControllerContainer.getValue().getPlaybackController().rewind();
                             setFadingEnabled(true);
                             return true;
@@ -1236,7 +1281,55 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
         leanbackOverlayFragment.updatePlayState();
     }
 
+    public boolean handleInterceptedMediaKey(int keyCode) {
+        if (mGuideVisible || mPopupPanelVisible) return false;
+
+        PlaybackController pc = playbackControllerContainer.getValue().getPlaybackController();
+        if (pc == null) return false;
+
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+            pc.playPause();
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
+            pc.play(0);
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
+            pc.pause();
+            return true;
+        }
+        if (!pc.isLiveTv()) {
+            if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+                leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedUp();
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_MEDIA_REWIND) {
+                leanbackOverlayFragment.getPlayerGlue().stepPlaybackSpeedDown();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void refreshSpeedIndicator() {
+        PlaybackController pc = playbackControllerContainer.getValue().getPlaybackController();
+        if (pc != null) updateSpeedIndicator(pc.getPlaybackSpeed());
+    }
+
+    private void updateSpeedIndicator(float speed) {
+        if (binding == null) return;
+        if (speed == 1.0f) {
+            binding.speedIndicator.setVisibility(View.GONE);
+        } else {
+            binding.speedIndicator.setText(String.format(java.util.Locale.US, "%.2fx", speed));
+            binding.speedIndicator.setVisibility(View.VISIBLE);
+        }
+    }
+
     public void updateDisplay() {
+        PlaybackController speedCheckController = playbackControllerContainer.getValue().getPlaybackController();
+        if (speedCheckController != null) updateSpeedIndicator(speedCheckController.getPlaybackSpeed());
         BaseItemDto current = playbackControllerContainer.getValue().getPlaybackController().getCurrentlyPlayingItem();
         if (current != null && getContext() != null) {
             leanbackOverlayFragment.mediaInfoChanged();

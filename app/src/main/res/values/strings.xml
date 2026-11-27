@@ -699,4 +699,5 @@
     <string name="truehd">TrueHD</string>
     <string name="eac3_atmos">DD+ Atmos</string>
     <string name="truehd_atmos">TrueHD Atmos</string>
+    <string name="media_key_service_description">Allows the play/pause and fast-forward/rewind keys of the remote to work during playback on TV boxes that otherwise intercept them.</string>
 </resources>
